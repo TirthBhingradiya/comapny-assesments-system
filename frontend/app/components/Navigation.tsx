@@ -38,6 +38,7 @@ export default function Navigation({ children }: NavigationProps) {
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, roles: ['admin', 'manager', 'employee'] },
     { name: 'Assets', href: '/assets', icon: BuildingOfficeIcon, roles: ['admin', 'manager', 'employee'] },
     { name: 'Users', href: '/users', icon: UsersIcon, roles: ['admin', 'manager'] },
+    { name: 'Team', href: '/team', icon: UsersIcon, roles: ['manager'] },
     { name: 'Reports', href: '/reports', icon: ChartBarIcon, roles: ['admin', 'manager', 'employee'] },
     { name: 'Settings', href: '/settings', icon: CogIcon, roles: ['admin', 'manager', 'employee'] },
   ]

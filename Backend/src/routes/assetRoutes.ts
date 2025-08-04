@@ -1,12 +1,33 @@
-import express from 'express';
+import express, { Request } from 'express';
+import mongoose from 'mongoose';
 import { auth } from '../middleware/auth';
 import Asset from '../models/Asset';
 import { upload } from '../middleware/upload';
+import { IUser } from '../models/User';
+
+// Extend the Request interface to include user
+interface AuthRequest extends Request {
+  user?: any;
+}
 
 const router = express.Router();
 
+// Validation function for assignedTo field
+const validateAssignedTo = (assignedTo: any): mongoose.Types.ObjectId | null => {
+  if (!assignedTo || assignedTo.trim() === '') {
+    return null;
+  }
+  
+  // Check if it's a valid ObjectId
+  if (mongoose.Types.ObjectId.isValid(assignedTo)) {
+    return new mongoose.Types.ObjectId(assignedTo);
+  }
+  
+  throw new Error('Invalid assignedTo ID format');
+};
+
 // Get all assets with filtering and pagination
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, async (req: AuthRequest, res) => {
   try {
     const {
       page = 1,
@@ -23,14 +44,18 @@ router.get('/', auth, async (req, res) => {
     const filter: any = {};
 
     // Role-based filtering
-    // if (req.user.role === 'employee') {
-    //   // Employees can only see assets in their department or unassigned assets
-    //   filter.$or = [
-    //     { location: { $regex: req.user.department, $options: 'i' } },
-    //     { assignedTo: null },
-    //     { assignedTo: req.user._id }
-    //   ];
-    // }
+    if (req.user.role === 'employee') {
+      // Employees can only see their own assigned assets
+      filter.assignedTo = req.user._id;
+    } else if (req.user.role === 'manager') {
+      // Managers can see assets in their department and unassigned assets
+      filter.$or = [
+        { location: { $regex: req.user.department, $options: 'i' } },
+        { assignedTo: null },
+        { assignedTo: { $exists: true } }
+      ];
+    }
+    // Admins can see all assets (no additional filtering)
 
     if (type) filter.type = type;
     if (status) filter.status = status;
@@ -71,7 +96,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Get single asset
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', auth, async (req: AuthRequest, res) => {
   try {
     const asset = await Asset.findById(req.params.id)
       .populate('assignedTo', 'firstName lastName email employeeId department');
@@ -79,6 +104,22 @@ router.get('/:id', auth, async (req, res) => {
     if (!asset) {
       return res.status(404).json({ error: 'Asset not found' });
     }
+
+    // Role-based access control
+    if (req.user.role === 'employee') {
+      // Employees can only view their own assigned assets
+      if (asset.assignedTo?._id?.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ error: 'Access denied. You can only view your assigned assets.' });
+      }
+    } else if (req.user.role === 'manager') {
+      // Managers can view assets in their department or unassigned assets
+      const isInDepartment = asset.location.toLowerCase().includes(req.user.department.toLowerCase());
+      const isUnassigned = !asset.assignedTo;
+      if (!isInDepartment && !isUnassigned) {
+        return res.status(403).json({ error: 'Access denied. You can only view assets in your department.' });
+      }
+    }
+    // Admins can view all assets
     
     res.json(asset);
   } catch (error) {
@@ -87,52 +128,69 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // Create new asset (admin and manager only)
-router.post('/', auth, upload.array('images', 5), async (req, res) => {
+router.post('/', auth, async (req: AuthRequest, res) => {
   try {
     // Check if user has permission to create assets
-    // if (!['admin', 'manager'].includes(req.user.role)) {
-    //   return res.status(403).json({ error: 'Access denied. Only admins and managers can create assets.' });
-    // }
+    if (!['admin', 'manager'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Access denied. Only admins and managers can create assets.' });
+    }
 
-    const assetData = {
+    const assetData: any = {
       ...req.body,
       purchaseDate: new Date(req.body.purchaseDate),
       purchasePrice: Number(req.body.purchasePrice),
       currentValue: Number(req.body.currentValue),
-      warrantyExpiry: req.body.warrantyExpiry ? new Date(req.body.warrantyExpiry) : undefined
+      warrantyExpiry: req.body.warrantyExpiry ? new Date(req.body.warrantyExpiry) : undefined,
+      tags: req.body.tags ? (Array.isArray(req.body.tags) ? req.body.tags : req.body.tags.split(',').map((tag: string) => tag.trim())) : []
     };
 
-    if (req.files) {
-      assetData.images = (req.files as Express.Multer.File[]).map(file => file.filename);
+    // Handle assignedTo field properly with validation
+    try {
+      assetData.assignedTo = validateAssignedTo(req.body.assignedTo);
+    } catch (error) {
+      return res.status(400).json({ error: 'Invalid assignedTo ID format' });
     }
 
     const asset = new Asset(assetData);
     await asset.save();
     
     res.status(201).json(asset);
-  } catch (error) {
-    res.status(400).json({ error: 'Failed to create asset' });
+  } catch (error: any) {
+    console.error('Error creating asset:', error);
+    console.error('Request body:', req.body);
+    res.status(400).json({ 
+      error: 'Failed to create asset',
+      details: error.message,
+      validationErrors: error.errors ? Object.keys(error.errors).map(key => ({
+        field: key,
+        message: error.errors[key].message
+      })) : undefined
+    });
   }
 });
 
 // Update asset (admin and manager only)
-router.put('/:id', auth, upload.array('images', 5), async (req, res) => {
+router.put('/:id', auth, async (req: AuthRequest, res) => {
   try {
     // Check if user has permission to update assets
-    // if (!['admin', 'manager'].includes(req.user.role)) {
-    //   return res.status(403).json({ error: 'Access denied. Only admins and managers can update assets.' });
-    // }
+    if (!['admin', 'manager'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Access denied. Only admins and managers can update assets.' });
+    }
 
-    const updateData = {
+    const updateData: any = {
       ...req.body,
       purchaseDate: req.body.purchaseDate ? new Date(req.body.purchaseDate) : undefined,
       purchasePrice: req.body.purchasePrice ? Number(req.body.purchasePrice) : undefined,
       currentValue: req.body.currentValue ? Number(req.body.currentValue) : undefined,
-      warrantyExpiry: req.body.warrantyExpiry ? new Date(req.body.warrantyExpiry) : undefined
+      warrantyExpiry: req.body.warrantyExpiry ? new Date(req.body.warrantyExpiry) : undefined,
+      tags: req.body.tags ? (Array.isArray(req.body.tags) ? req.body.tags : req.body.tags.split(',').map((tag: string) => tag.trim())) : []
     };
 
-    if (req.files) {
-      updateData.images = (req.files as Express.Multer.File[]).map(file => file.filename);
+    // Handle assignedTo field properly with validation
+    try {
+      updateData.assignedTo = validateAssignedTo(req.body.assignedTo);
+    } catch (error) {
+      return res.status(400).json({ error: 'Invalid assignedTo ID format' });
     }
 
     const asset = await Asset.findByIdAndUpdate(
@@ -146,18 +204,22 @@ router.put('/:id', auth, upload.array('images', 5), async (req, res) => {
     }
 
     res.json(asset);
-  } catch (error) {
-    res.status(400).json({ error: 'Failed to update asset' });
+  } catch (error: any) {
+    console.error('Error updating asset:', error);
+    res.status(400).json({ 
+      error: 'Failed to update asset',
+      details: error.message 
+    });
   }
 });
 
 // Delete asset (admin and manager only)
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, async (req: AuthRequest, res) => {
   try {
     // Check if user has permission to delete assets
-    // if (!['admin', 'manager'].includes(req.user.role)) {
-    //   return res.status(403).json({ error: 'Access denied. Only admins and managers can delete assets.' });
-    // }
+    if (!['admin', 'manager'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Access denied. Only admins and managers can delete assets.' });
+    }
 
     const asset = await Asset.findByIdAndDelete(req.params.id);
     
@@ -172,7 +234,7 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 // Add maintenance record
-router.post('/:id/maintenance', auth, async (req, res) => {
+router.post('/:id/maintenance', auth, async (req: AuthRequest, res) => {
   try {
     const { date, description, cost, performedBy } = req.body;
     
@@ -180,6 +242,21 @@ router.post('/:id/maintenance', auth, async (req, res) => {
     if (!asset) {
       return res.status(404).json({ error: 'Asset not found' });
     }
+
+    // Role-based access control for maintenance
+    if (req.user.role === 'employee') {
+      // Employees can only add maintenance records to their assigned assets
+      if (asset.assignedTo?.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ error: 'Access denied. You can only add maintenance records to your assigned assets.' });
+      }
+    } else if (req.user.role === 'manager') {
+      // Managers can add maintenance records to assets in their department
+      const isInDepartment = asset.location.toLowerCase().includes(req.user.department.toLowerCase());
+      if (!isInDepartment) {
+        return res.status(403).json({ error: 'Access denied. You can only add maintenance records to assets in your department.' });
+      }
+    }
+    // Admins can add maintenance records to any asset
 
     asset.maintenanceHistory.push({
       date: new Date(date),
@@ -196,22 +273,37 @@ router.post('/:id/maintenance', auth, async (req, res) => {
 });
 
 // Get asset statistics
-router.get('/stats/overview', auth, async (req, res) => {
+router.get('/stats/overview', auth, async (req: AuthRequest, res) => {
   try {
-    const totalAssets = await Asset.countDocuments();
-    const activeAssets = await Asset.countDocuments({ status: 'active' });
-    const maintenanceAssets = await Asset.countDocuments({ status: 'maintenance' });
-    const retiredAssets = await Asset.countDocuments({ status: 'retired' });
+    let filter = {};
+    
+    // Role-based filtering for statistics
+    if (req.user.role === 'employee') {
+      // Employees only see statistics for their assigned assets
+      filter = { assignedTo: req.user._id };
+    } else if (req.user.role === 'manager') {
+      // Managers see statistics for their department
+      filter = { location: { $regex: req.user.department, $options: 'i' } };
+    }
+    // Admins see all statistics (no filter)
+
+    const totalAssets = await Asset.countDocuments(filter);
+    const activeAssets = await Asset.countDocuments({ ...filter, status: 'active' });
+    const maintenanceAssets = await Asset.countDocuments({ ...filter, status: 'maintenance' });
+    const retiredAssets = await Asset.countDocuments({ ...filter, status: 'retired' });
     
     const totalValue = await Asset.aggregate([
+      { $match: filter },
       { $group: { _id: null, total: { $sum: '$currentValue' } } }
     ]);
 
     const assetsByType = await Asset.aggregate([
+      { $match: filter },
       { $group: { _id: '$type', count: { $sum: 1 } } }
     ]);
 
     const assetsByCondition = await Asset.aggregate([
+      { $match: filter },
       { $group: { _id: '$condition', count: { $sum: 1 } } }
     ]);
 
@@ -226,6 +318,122 @@ router.get('/stats/overview', auth, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch statistics' });
+  }
+});
+
+// Assign asset to user (manager and admin only)
+router.post('/:id/assign', auth, async (req: AuthRequest, res) => {
+  try {
+    const { assignedTo } = req.body;
+    
+    // Check if user has permission to assign assets
+    if (!['admin', 'manager'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Access denied. Only managers and admins can assign assets.' });
+    }
+
+    const asset = await Asset.findById(req.params.id);
+    if (!asset) {
+      return res.status(404).json({ error: 'Asset not found' });
+    }
+
+    // Manager can only assign assets in their department
+    if (req.user.role === 'manager') {
+      const isInDepartment = asset.location.toLowerCase().includes(req.user.department.toLowerCase());
+      if (!isInDepartment) {
+        return res.status(403).json({ error: 'Access denied. You can only assign assets in your department.' });
+      }
+    }
+
+    // Validate assignedTo
+    try {
+      const validatedAssignedTo = validateAssignedTo(assignedTo);
+      asset.assignedTo = validatedAssignedTo as any;
+    } catch (error) {
+      return res.status(400).json({ error: 'Invalid assignedTo ID format' });
+    }
+
+    await asset.save();
+    
+    const populatedAsset = await Asset.findById(asset._id)
+      .populate('assignedTo', 'firstName lastName email employeeId department');
+    
+    res.json(populatedAsset);
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to assign asset' });
+  }
+});
+
+// Return asset (manager and admin only)
+router.post('/:id/return', auth, async (req: AuthRequest, res) => {
+  try {
+    // Check if user has permission to return assets
+    if (!['admin', 'manager'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Access denied. Only managers and admins can return assets.' });
+    }
+
+    const asset = await Asset.findById(req.params.id);
+    if (!asset) {
+      return res.status(404).json({ error: 'Asset not found' });
+    }
+
+    // Manager can only return assets in their department
+    if (req.user.role === 'manager') {
+      const isInDepartment = asset.location.toLowerCase().includes(req.user.department.toLowerCase());
+      if (!isInDepartment) {
+        return res.status(403).json({ error: 'Access denied. You can only return assets in your department.' });
+      }
+    }
+
+    // Set assignedTo to null (unassign)
+    asset.assignedTo = null as any;
+    await asset.save();
+    
+    const populatedAsset = await Asset.findById(asset._id)
+      .populate('assignedTo', 'firstName lastName email employeeId department');
+    
+    res.json(populatedAsset);
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to return asset' });
+  }
+});
+
+// Get asset assignment history (manager and admin only)
+router.get('/:id/history', auth, async (req: AuthRequest, res) => {
+  try {
+    // Check if user has permission to view history
+    if (!['admin', 'manager'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Access denied. Only managers and admins can view asset history.' });
+    }
+
+    const asset = await Asset.findById(req.params.id)
+      .populate('assignedTo', 'firstName lastName email employeeId department');
+    
+    if (!asset) {
+      return res.status(404).json({ error: 'Asset not found' });
+    }
+
+    // Manager can only view history for assets in their department
+    if (req.user.role === 'manager') {
+      const isInDepartment = asset.location.toLowerCase().includes(req.user.department.toLowerCase());
+      if (!isInDepartment) {
+        return res.status(403).json({ error: 'Access denied. You can only view history for assets in your department.' });
+      }
+    }
+
+    // For now, return the asset with its current assignment
+    // In a real system, you'd have a separate history collection
+    res.json({
+      asset,
+      history: [
+        {
+          date: asset.updatedAt,
+          action: asset.assignedTo ? 'Assigned' : 'Unassigned',
+          user: asset.assignedTo ? `${(asset.assignedTo as unknown as IUser).firstName} ${(asset.assignedTo as unknown as IUser).lastName}` : 'None'
+        }
+      ]
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch asset history' });
   }
 });
 

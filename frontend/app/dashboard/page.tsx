@@ -100,24 +100,40 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Welcome to your company assets management dashboard
+            {user?.role === 'employee' 
+              ? 'View your assigned assets and request support'
+              : user?.role === 'manager'
+              ? 'Manage your team and department assets'
+              : 'Manage all company assets and users'
+            }
           </p>
         </div>
         <div className="flex space-x-3">
-          <button
-            onClick={() => router.push('/assets/new')}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <PlusIcon className="h-4 w-4 mr-2" />
-            Add Asset
-          </button>
           {(user?.role === 'admin' || user?.role === 'manager') && (
+            <button
+              onClick={() => router.push('/assets/new')}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add Asset
+            </button>
+          )}
+          {user?.role === 'admin' && (
             <button
               onClick={() => router.push('/users/new')}
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <UsersIcon className="h-4 w-4 mr-2" />
               Add User
+            </button>
+          )}
+          {user?.role === 'manager' && (
+            <button
+              onClick={() => router.push('/team')}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <UsersIcon className="h-4 w-4 mr-2" />
+              View Team
             </button>
           )}
         </div>
@@ -308,15 +324,26 @@ export default function DashboardPage() {
                 className="flex items-center p-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               >
                 <BuildingOfficeIcon className="h-6 w-6 text-blue-600 mr-3" />
-                <span className="text-sm font-medium text-gray-900">Manage Assets</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {user?.role === 'employee' ? 'View Assets' : 'Manage Assets'}
+                </span>
               </button>
-              {(user?.role === 'admin' || user?.role === 'manager') && (
+              {user?.role === 'admin' && (
                 <button
                   onClick={() => router.push('/users')}
                   className="flex items-center p-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   <UsersIcon className="h-6 w-6 text-green-600 mr-3" />
                   <span className="text-sm font-medium text-gray-900">Manage Users</span>
+                </button>
+              )}
+              {user?.role === 'manager' && (
+                <button
+                  onClick={() => router.push('/team')}
+                  className="flex items-center p-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  <UsersIcon className="h-6 w-6 text-green-600 mr-3" />
+                  <span className="text-sm font-medium text-gray-900">View Team</span>
                 </button>
               )}
               <button

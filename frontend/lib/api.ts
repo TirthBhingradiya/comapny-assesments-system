@@ -3,27 +3,37 @@ import axios from 'axios'
 export interface Asset {
   _id: string
   name: string
-  type: string
-  status: string
-  condition: string
+  type: 'equipment' | 'furniture' | 'electronics' | 'vehicle' | 'software' | 'other'
+  category: string
+  serialNumber?: string
+  model?: string
+  manufacturer?: string
+  purchaseDate: string
+  purchasePrice: number
   currentValue: number
   location: string
   assignedTo?: {
+    _id: string
     firstName: string
     lastName: string
+    email: string
     employeeId: string
+    department?: string
   }
-  purchaseDate?: string
-  purchasePrice?: number
-  description?: string
-  serialNumber?: string
-  manufacturer?: string
-  model?: string
+  status: 'active' | 'maintenance' | 'retired' | 'lost' | 'stolen'
+  condition: 'excellent' | 'good' | 'fair' | 'poor'
   warrantyExpiry?: string
-  lastMaintenance?: string
-  nextMaintenance?: string
-  createdAt?: string
-  updatedAt?: string
+  maintenanceHistory: Array<{
+    date: string
+    description: string
+    cost: number
+    performedBy: string
+  }>
+  notes?: string
+  images?: string[]
+  tags: string[]
+  createdAt: string
+  updatedAt: string
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
@@ -41,6 +51,9 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+      console.log('🔐 Adding token to request:', config.url)
+    } else {
+      console.log('⚠️ No token found for request:', config.url)
     }
     return config
   },
@@ -108,6 +121,12 @@ export const assetsAPI = {
   
   getStats: () =>
     api.get('/assets/stats/overview'),
+  
+  assignToUser: (id: string, userId: string) =>
+    api.post(`/assets/${id}/assign`, { assignedTo: userId }),
+  
+  returnAsset: (id: string) =>
+    api.post(`/assets/${id}/return`),
 }
 
 // Convenience function for getting assets
@@ -135,6 +154,15 @@ export const usersAPI = {
   
   toggleStatus: (id: string) =>
     api.patch(`/users/${id}/toggle-status`),
+  
+  getTeamMembers: () =>
+    api.get('/users/team/members'),
+  
+  getAssignmentList: () =>
+    api.get('/users/assignment/list'),
+  
+  getProfile: (id: string) =>
+    api.get(`/users/profile/${id}`),
 }
 
 export default api 

@@ -48,7 +48,8 @@ const AssetSchema = new Schema<IAsset>({
     type: String,
     trim: true,
     unique: true,
-    sparse: true
+    sparse: true,
+    index: true
   },
   model: {
     type: String,

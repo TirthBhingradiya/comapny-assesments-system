@@ -151,6 +151,78 @@ const sampleAssets = [
     warrantyExpiry: new Date('2026-02-25'),
     assignedTo: null,
     tags: ['mouse', 'wireless', 'design']
+  },
+  {
+    name: 'Ergonomic Office Chair',
+    type: 'furniture',
+    category: 'Seating',
+    status: 'active',
+    condition: 'excellent',
+    currentValue: 299,
+    location: 'HR Department',
+    notes: 'Ergonomic chair for employee comfort',
+    serialNumber: 'CHA2024009',
+    manufacturer: 'Herman Miller',
+    model: 'Aeron',
+    purchaseDate: new Date('2024-01-10'),
+    purchasePrice: 299,
+    warrantyExpiry: new Date('2029-01-10'),
+    assignedTo: null,
+    tags: ['chair', 'ergonomic', 'office']
+  },
+  {
+    name: 'Standing Desk',
+    type: 'furniture',
+    category: 'Desks',
+    status: 'active',
+    condition: 'good',
+    currentValue: 399,
+    location: 'Engineering Department',
+    notes: 'Adjustable standing desk for health',
+    serialNumber: 'DSK2024010',
+    manufacturer: 'Uplift Desk',
+    model: 'V2 Commercial',
+    purchaseDate: new Date('2024-02-05'),
+    purchasePrice: 399,
+    warrantyExpiry: new Date('2029-02-05'),
+    assignedTo: null,
+    tags: ['desk', 'standing', 'adjustable']
+  },
+  {
+    name: 'Adobe Creative Suite License',
+    type: 'software',
+    category: 'Design Software',
+    status: 'active',
+    condition: 'excellent',
+    currentValue: 599,
+    location: 'Design Department',
+    notes: 'Annual license for design team',
+    serialNumber: 'ADB2024011',
+    manufacturer: 'Adobe',
+    model: 'Creative Suite 2024',
+    purchaseDate: new Date('2024-01-01'),
+    purchasePrice: 599,
+    warrantyExpiry: new Date('2025-01-01'),
+    assignedTo: null,
+    tags: ['software', 'design', 'adobe']
+  },
+  {
+    name: 'Company Vehicle - Tesla Model 3',
+    type: 'vehicle',
+    category: 'Electric Vehicles',
+    status: 'active',
+    condition: 'excellent',
+    currentValue: 45000,
+    location: 'Fleet Management',
+    notes: 'Company car for executive travel',
+    serialNumber: 'TES2024012',
+    manufacturer: 'Tesla',
+    model: 'Model 3 Long Range',
+    purchaseDate: new Date('2024-03-01'),
+    purchasePrice: 45000,
+    warrantyExpiry: new Date('2029-03-01'),
+    assignedTo: null,
+    tags: ['vehicle', 'electric', 'tesla']
   }
 ];
 
@@ -211,11 +283,7 @@ export const seedDatabase = async () => {
     // Create users
     const createdUsers = [];
     for (const userData of sampleUsers) {
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
-      const user = new User({
-        ...userData,
-        password: hashedPassword
-      });
+      const user = new User(userData);
       await user.save();
       createdUsers.push(user);
       console.log(`👤 Created user: ${user.firstName} ${user.lastName} (${user.role})`);
@@ -226,6 +294,28 @@ export const seedDatabase = async () => {
       const asset = new Asset(assetData);
       await asset.save();
       console.log(`💻 Created asset: ${asset.name}`);
+    }
+
+    // Assign some assets to users
+    const assets = await Asset.find({});
+    const users = await User.find({});
+    
+    if (assets.length > 0 && users.length > 0) {
+      // Assign first asset to admin user
+      await Asset.findByIdAndUpdate(assets[0]._id, { assignedTo: users[0]._id });
+      console.log(`🔗 Assigned ${assets[0].name} to ${users[0].firstName} ${users[0].lastName}`);
+      
+      // Assign second asset to manager user
+      if (assets.length > 1 && users.length > 1) {
+        await Asset.findByIdAndUpdate(assets[1]._id, { assignedTo: users[1]._id });
+        console.log(`🔗 Assigned ${assets[1].name} to ${users[1].firstName} ${users[1].lastName}`);
+      }
+      
+      // Assign third asset to employee user
+      if (assets.length > 2 && users.length > 2) {
+        await Asset.findByIdAndUpdate(assets[2]._id, { assignedTo: users[2]._id });
+        console.log(`🔗 Assigned ${assets[2].name} to ${users[2].firstName} ${users[2].lastName}`);
+      }
     }
 
     console.log('✅ Database seeding completed successfully!');
