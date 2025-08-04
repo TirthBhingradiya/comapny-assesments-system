@@ -4,21 +4,15 @@ const API_BASE_URL = 'http://localhost:4000/api';
 
 async function testLogin() {
   try {
-    console.log('Testing login functionality...\n');
 
-    // Test login with existing user
-    console.log('1. Testing login with existing user...');
     const loginResponse = await axios.post(`${API_BASE_URL}/auth/login`, {
       email: 'test@example.com',
       password: 'test123'
     });
     
-    console.log('✅ Login successful!');
-    console.log('Token:', loginResponse.data.token);
-    console.log('User:', loginResponse.data.user);
+
 
     // Test getting profile with token
-    console.log('\n2. Testing profile retrieval...');
     const profileResponse = await axios.get(`${API_BASE_URL}/auth/me`, {
       headers: {
         'Authorization': `Bearer ${loginResponse.data.token}`

@@ -19,17 +19,12 @@ async function testCORS() {
       }
     });
     
-    console.log('✅ CORS test successful!');
-    console.log('Response status:', response.status);
-    console.log('Response data:', response.data);
+
   } catch (error) {
     console.log('❌ CORS test failed!');
     console.log('Error:', error.message);
     if (error.response) {
-      console.log('Response status:', error.response.status);
-      console.log('Response data:', error.response.data);
-      console.log('Response headers:', error.response.headers);
-    }
+
   }
 }
 

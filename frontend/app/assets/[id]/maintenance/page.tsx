@@ -8,6 +8,8 @@ import LoadingSpinner from '@/app/components/LoadingSpinner'
 import Navigation from '@/app/components/Navigation'
 import { useAuth } from '@/app/components/AuthContext'
 import toast from 'react-hot-toast'
+import ErrorMessage from "@/app/components/ErrorMessage";
+
 
 interface MaintenanceFormData {
   date: string
@@ -176,7 +178,7 @@ export default function MaintenancePage() {
                     name="date"
                     value={formData.date}
                     onChange={handleInputChange}
-                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full border rounded-md px-3 py-2  text-black focus:ring-blue-500 focus:border-blue-500 ${
                       errors.date ? 'border-red-500' : 'border-gray-300'
                     }`}
                   />
@@ -192,7 +194,7 @@ export default function MaintenancePage() {
                     value={formData.description}
                     onChange={handleInputChange}
                     rows={4}
-                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full border rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500 ${
                       errors.description ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="Describe the maintenance work performed..."
@@ -214,7 +216,7 @@ export default function MaintenancePage() {
                         onChange={handleInputChange}
                         step="0.01"
                         min="0"
-                        className={`w-full border rounded-md pl-8 pr-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        className={`w-full border rounded-md pl-8 pr-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500 ${
                           errors.cost ? 'border-red-500' : 'border-gray-300'
                         }`}
                         placeholder="0.00"
@@ -232,7 +234,7 @@ export default function MaintenancePage() {
                       name="performedBy"
                       value={formData.performedBy}
                       onChange={handleInputChange}
-                      className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      className={`w-full border rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500 ${
                         errors.performedBy ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="Name of person or company"

@@ -78,7 +78,7 @@ export default function SettingsPage() {
                     type="text"
                     id="firstName"
                     defaultValue="John"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -89,7 +89,7 @@ export default function SettingsPage() {
                     type="text"
                     id="lastName"
                     defaultValue="Doe"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -100,7 +100,7 @@ export default function SettingsPage() {
                     type="email"
                     id="email"
                     defaultValue="john.doe@company.com"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -110,7 +110,7 @@ export default function SettingsPage() {
                   <select
                     id="department"
                     defaultValue="IT"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300  text-black rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="IT">IT</option>
                     <option value="HR">HR</option>
@@ -174,7 +174,7 @@ export default function SettingsPage() {
                   <input
                     type="password"
                     id="currentPassword"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -184,7 +184,7 @@ export default function SettingsPage() {
                   <input
                     type="password"
                     id="newPassword"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -194,7 +194,7 @@ export default function SettingsPage() {
                   <input
                     type="password"
                     id="confirmPassword"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300  text-black rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -224,7 +224,7 @@ export default function SettingsPage() {
                       type="text"
                       id="apiKey"
                       defaultValue="sk-1234567890abcdef"
-                      className="flex-1 border border-gray-300 rounded-l-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="flex-1 border border-gray-300 text-black rounded-l-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       readOnly
                     />
                     <button
@@ -243,7 +243,7 @@ export default function SettingsPage() {
                     type="url"
                     id="webhookUrl"
                     placeholder="https://your-domain.com/webhook"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>

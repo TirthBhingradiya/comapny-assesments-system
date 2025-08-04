@@ -212,7 +212,7 @@ export default function AssetsPage() {
                     placeholder="Search assets by name, serial number, manufacturer..."
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-black focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -239,7 +239,7 @@ export default function AssetsPage() {
                   <select
                     value={filters.type}
                     onChange={(e) => handleFilterChange('type', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 text-black py-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">All Types</option>
                     <option value="equipment">Equipment</option>
@@ -255,7 +255,7 @@ export default function AssetsPage() {
                   <select
                     value={filters.status}
                     onChange={(e) => handleFilterChange('status', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">All Status</option>
                     <option value="active">Active</option>
@@ -272,7 +272,7 @@ export default function AssetsPage() {
                     placeholder="Enter location"
                     value={filters.location}
                     onChange={(e) => handleFilterChange('location', e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>

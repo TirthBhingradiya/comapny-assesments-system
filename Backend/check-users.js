@@ -27,14 +27,11 @@ async function checkAndAddUsers() {
     // Connect to MongoDB
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/company-assets';
     await mongoose.connect(mongoURI);
-    console.log('✅ Connected to MongoDB successfully!');
-    
+
     // Check existing users
     const existingUsers = await User.find({});
-    console.log(`📊 Found ${existingUsers.length} existing users:`);
-    
+
     existingUsers.forEach(user => {
-      console.log(`- ${user.firstName} ${user.lastName} (${user.email}) - ${user.role} - ${user.department}`);
     });
     
     // Add more real employee data if needed

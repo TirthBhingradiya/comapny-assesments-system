@@ -29,10 +29,18 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  console.log("stats will be here",stats)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const { user } = useAuth()
+
+  const userString = localStorage.getItem("user") ?? '{}';
+  const userRole = JSON.parse(userString);
+  console.log("user role will be the ",userRole)
+
+
+
 
   const fetchDashboardData = async () => {
     try {
@@ -41,6 +49,7 @@ export default function DashboardPage() {
       if (user?.role === 'admin' || user?.role === 'manager') {
         // Admins and managers can see full user list
         usersResponse = await usersAPI.getAll({ limit: 5 })
+        console.log("user response",usersResponse)
       } else {
         // Regular users see basic user list
         usersResponse = await usersAPI.getBasicList()
@@ -269,6 +278,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent Users */}
+
+          {userRole?.role!=="employee" &&(
           <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <div className="flex items-center justify-between mb-4">
@@ -309,7 +320,7 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
-          </div>
+          </div>)}
         </div>
 
         {/* Quick Actions */}

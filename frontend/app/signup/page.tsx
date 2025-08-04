@@ -43,7 +43,8 @@ export default function SignupPage() {
     try {
       const response = await authAPI.register(formData)
       const { token, user } = response.data
-      
+
+
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(user))
       
@@ -93,7 +94,7 @@ export default function SignupPage() {
                       required
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Enter your first name"
                     />
                   </div>
@@ -112,7 +113,7 @@ export default function SignupPage() {
                       required
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="appearance-none block w-full px-3 py-2 border  text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Enter your last name"
                     />
                   </div>
@@ -132,7 +133,7 @@ export default function SignupPage() {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -151,7 +152,7 @@ export default function SignupPage() {
                       required
                       value={formData.employeeId}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Enter employee ID"
                     />
                   </div>
@@ -168,7 +169,7 @@ export default function SignupPage() {
                       required
                       value={formData.department}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="">Select department</option>
                       <option value="IT">IT</option>
@@ -195,7 +196,7 @@ export default function SignupPage() {
                     required
                     value={formData.role}
                     onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="appearance-none block w-full px-3 py-2 text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="employee">Employee</option>
                     <option value="manager">Manager</option>
@@ -217,7 +218,7 @@ export default function SignupPage() {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10"
+                    className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10"
                     placeholder="Enter your password"
                   />
                   <button

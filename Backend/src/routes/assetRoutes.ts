@@ -111,14 +111,8 @@ router.get('/:id', auth, async (req: AuthRequest, res) => {
       if (asset.assignedTo?._id?.toString() !== req.user._id.toString()) {
         return res.status(403).json({ error: 'Access denied. You can only view your assigned assets.' });
       }
-    } else if (req.user.role === 'manager') {
-      // Managers can view assets in their department or unassigned assets
-      const isInDepartment = asset.location.toLowerCase().includes(req.user.department.toLowerCase());
-      const isUnassigned = !asset.assignedTo;
-      if (!isInDepartment && !isUnassigned) {
-        return res.status(403).json({ error: 'Access denied. You can only view assets in your department.' });
-      }
     }
+
     // Admins can view all assets
     
     res.json(asset);
@@ -332,17 +326,20 @@ router.post('/:id/assign', auth, async (req: AuthRequest, res) => {
     }
 
     const asset = await Asset.findById(req.params.id);
+    console.log("assests ",asset);
     if (!asset) {
       return res.status(404).json({ error: 'Asset not found' });
     }
 
     // Manager can only assign assets in their department
-    if (req.user.role === 'manager') {
-      const isInDepartment = asset.location.toLowerCase().includes(req.user.department.toLowerCase());
-      if (!isInDepartment) {
-        return res.status(403).json({ error: 'Access denied. You can only assign assets in your department.' });
-      }
-    }
+    // if (req.user.role === 'manager') {
+    //   console.log("request user role",req.user);
+    //   const isInDepartment = asset.location.toLowerCase().includes(req.user.department.toLowerCase());
+    //   console.log("is in department",isInDepartment);
+    //   if (!isInDepartment) {
+    //     return res.status(403).json({ error: 'Access denied. You can only assign assets in your department.' });
+    //   }
+    // }
 
     // Validate assignedTo
     try {

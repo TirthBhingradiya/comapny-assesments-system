@@ -303,26 +303,19 @@ export const seedDatabase = async () => {
     if (assets.length > 0 && users.length > 0) {
       // Assign first asset to admin user
       await Asset.findByIdAndUpdate(assets[0]._id, { assignedTo: users[0]._id });
-      console.log(`🔗 Assigned ${assets[0].name} to ${users[0].firstName} ${users[0].lastName}`);
-      
+
       // Assign second asset to manager user
       if (assets.length > 1 && users.length > 1) {
         await Asset.findByIdAndUpdate(assets[1]._id, { assignedTo: users[1]._id });
-        console.log(`🔗 Assigned ${assets[1].name} to ${users[1].firstName} ${users[1].lastName}`);
       }
       
       // Assign third asset to employee user
       if (assets.length > 2 && users.length > 2) {
         await Asset.findByIdAndUpdate(assets[2]._id, { assignedTo: users[2]._id });
-        console.log(`🔗 Assigned ${assets[2].name} to ${users[2].firstName} ${users[2].lastName}`);
       }
     }
 
-    console.log('✅ Database seeding completed successfully!');
-    console.log('\n📋 Sample Login Credentials:');
-    console.log('Admin: admin@company.com / admin123');
-    console.log('Manager: manager@company.com / manager123');
-    console.log('Employee: employee@company.com / employee123');
+
 
   } catch (error) {
     console.error('❌ Error seeding database:', error);

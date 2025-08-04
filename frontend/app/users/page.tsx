@@ -40,7 +40,7 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await usersAPI.getAll()
+      const response = await usersAPI.getBasicList()
       setUsers(response.data.users || [])
     } catch (err: any) {
       setError('Failed to fetch users')
@@ -154,7 +154,7 @@ export default function UsersPage() {
                 placeholder="Search users..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
@@ -163,7 +163,7 @@ export default function UsersPage() {
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 text-black rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">All Roles</option>
                 <option value="admin">Admin</option>
@@ -177,7 +177,7 @@ export default function UsersPage() {
               <select
                 value={departmentFilter}
                 onChange={(e) => setDepartmentFilter(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 rounded-md text-black px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">All Departments</option>
                 <option value="IT">IT</option>
@@ -196,7 +196,7 @@ export default function UsersPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 rounded-md px-3  text-black py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -256,7 +256,7 @@ export default function UsersPage() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <div className="text-right">
+                      <div className="text-right flex flex-row gap-2.5">
                         <div className="text-sm text-gray-500">{user.department}</div>
                         <div className="flex items-center space-x-2">
                           <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
@@ -274,20 +274,20 @@ export default function UsersPage() {
                         </div>
                       </div>
                       <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleViewUser(user)}
-                          className="text-gray-400 hover:text-blue-600"
-                          title="View details"
-                        >
-                          <EyeIcon className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="text-gray-400 hover:text-blue-600"
-                          title="Edit user"
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </button>
+                        {/*<button*/}
+                        {/*  onClick={() => handleViewUser(user)}*/}
+                        {/*  className="text-gray-400 hover:text-blue-600"*/}
+                        {/*  title="View details"*/}
+                        {/*>*/}
+                        {/*  <EyeIcon className="h-4 w-4" />*/}
+                        {/*</button>*/}
+                        {/*<button*/}
+                        {/*  onClick={() => handleEditUser(user)}*/}
+                        {/*  className="text-gray-400 hover:text-blue-600"*/}
+                        {/*  title="Edit user"*/}
+                        {/*>*/}
+                        {/*  <PencilIcon className="h-4 w-4" />*/}
+                        {/*</button>*/}
                         <button
                           onClick={() => handleToggleStatus(user._id)}
                           className={`text-xs px-2 py-1 rounded ${

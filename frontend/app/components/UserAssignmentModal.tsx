@@ -51,11 +51,9 @@ export default function UserAssignmentModal({
       console.log('🔍 Fetching users for assignment...')
       
       // Use the same endpoint as dashboard (which works)
-      const response = await usersAPI.getAll({ limit: 100 })
-      console.log('📊 API Response:', response.data)
-      
-      const users = response.data.users || []
-      console.log('👥 Users found:', users.length)
+      const response = await usersAPI.getBasicList()
+
+      const users :User[]= response.data.users || []
       users.forEach(user => {
         console.log(`- ${user.firstName} ${user.lastName} (${user.role}) - ${user.department}`)
       })
@@ -64,7 +62,6 @@ export default function UserAssignmentModal({
       
     } catch (error) {
       console.error('❌ Error fetching users:', error)
-      console.error('Error details:', error.response?.data || error.message)
       toast.error('Failed to load users')
     } finally {
       setLoading(false)
@@ -119,7 +116,7 @@ export default function UserAssignmentModal({
               placeholder="Search users by name, email, or employee ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 text-black rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
             <UserIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>

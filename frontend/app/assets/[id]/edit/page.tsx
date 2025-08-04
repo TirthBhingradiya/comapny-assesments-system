@@ -8,6 +8,7 @@ import LoadingSpinner from '@/app/components/LoadingSpinner'
 import Navigation from '@/app/components/Navigation'
 import { useAuth } from '@/app/components/AuthContext'
 import toast from 'react-hot-toast'
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 interface AssetFormData {
   name: string
@@ -211,7 +212,7 @@ export default function EditAssetPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full border rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500 ${
                       errors.name ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="Enter asset name"
@@ -227,7 +228,7 @@ export default function EditAssetPage() {
                     name="type"
                     value={formData.type}
                     onChange={handleInputChange}
-                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full border rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500 ${
                       errors.type ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -251,7 +252,7 @@ export default function EditAssetPage() {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full border rounded-md px-3 py-2  text-black focus:ring-blue-500 focus:border-blue-500 ${
                       errors.category ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="e.g., Office Equipment, IT Hardware"
@@ -268,7 +269,7 @@ export default function EditAssetPage() {
                     name="serialNumber"
                     value={formData.serialNumber}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2  text-black focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter serial number"
                   />
                 </div>
@@ -288,7 +289,7 @@ export default function EditAssetPage() {
                     name="manufacturer"
                     value={formData.manufacturer}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter manufacturer name"
                   />
                 </div>
@@ -302,7 +303,7 @@ export default function EditAssetPage() {
                     name="model"
                     value={formData.model}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter model number"
                   />
                 </div>
@@ -322,7 +323,7 @@ export default function EditAssetPage() {
                     name="purchaseDate"
                     value={formData.purchaseDate}
                     onChange={handleInputChange}
-                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500  text-black focus:border-blue-500 ${
                       errors.purchaseDate ? 'border-red-500' : 'border-gray-300'
                     }`}
                   />
@@ -342,7 +343,7 @@ export default function EditAssetPage() {
                       onChange={handleInputChange}
                       step="0.01"
                       min="0"
-                      className={`w-full border rounded-md pl-8 pr-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      className={`w-full border rounded-md pl-8 pr-3 py-2 focus:ring-blue-500 text-black focus:border-blue-500 ${
                         errors.purchasePrice ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="0.00"
@@ -364,7 +365,7 @@ export default function EditAssetPage() {
                       onChange={handleInputChange}
                       step="0.01"
                       min="0"
-                      className={`w-full border rounded-md pl-8 pr-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      className={`w-full border rounded-md pl-8 pr-3 py-2 focus:ring-blue-500  text-black focus:border-blue-500 ${
                         errors.currentValue ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="0.00"
@@ -388,7 +389,7 @@ export default function EditAssetPage() {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full border rounded-md px-3 py-2 focus:ring-blue-500 text-black focus:border-blue-500 ${
                       errors.location ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="e.g., Building A, Floor 2, Room 201"
@@ -405,7 +406,7 @@ export default function EditAssetPage() {
                     name="assignedTo"
                     value={formData.assignedTo}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Employee ID or name"
                   />
                 </div>
@@ -424,7 +425,7 @@ export default function EditAssetPage() {
                     name="status"
                     value={formData.status}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2  text-black focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="active">Active</option>
                     <option value="maintenance">Maintenance</option>
@@ -442,7 +443,7 @@ export default function EditAssetPage() {
                     name="condition"
                     value={formData.condition}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="excellent">Excellent</option>
                     <option value="good">Good</option>
@@ -466,7 +467,7 @@ export default function EditAssetPage() {
                     name="warrantyExpiry"
                     value={formData.warrantyExpiry}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
@@ -479,7 +480,7 @@ export default function EditAssetPage() {
                     name="tags"
                     value={formData.tags}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter tags separated by commas"
                   />
                 </div>
@@ -494,7 +495,7 @@ export default function EditAssetPage() {
                   value={formData.notes}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2  text-black focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Additional notes about the asset..."
                 />
               </div>
