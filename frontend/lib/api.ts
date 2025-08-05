@@ -43,6 +43,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
 })
 
 // Request interceptor to add auth token
@@ -51,7 +52,6 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
-    } else {
     }
     return config
   },
@@ -66,101 +66,270 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
       window.location.href = '/login'
     } else if (error.response?.status === 500) {
       console.error('Server error:', error.response?.data)
-      // Show a more user-friendly error message
       error.message = 'Server is currently unavailable. Please try again later.'
     } else if (!error.response) {
-      // Network error
+      // Network error or timeout
       error.message = 'Unable to connect to server. Please check your internet connection.'
     }
     return Promise.reject(error)
   }
 )
 
+// Helper function to create fallback responses
+const createFallbackResponse = (data: any) => ({
+  data,
+  status: 200,
+  statusText: 'OK'
+})
+
 // Auth API
 export const authAPI = {
-  login: (credentials: { email: string; password: string }) =>
-    api.post('/auth/login', credentials),
+  login: async (credentials: { email: string; password: string }) => {
+    try {
+      return await api.post('/auth/login', credentials)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  register: (userData: any) =>
-    api.post('/auth/register', userData),
+  register: async (userData: any) => {
+    try {
+      return await api.post('/auth/register', userData)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  getProfile: () =>
-    api.get('/auth/me'),
+  getProfile: async () => {
+    try {
+      return await api.get('/auth/me')
+    } catch (error) {
+      throw error
+    }
+  },
   
-  updateProfile: (data: any) =>
-    api.put('/auth/me', data),
+  updateProfile: async (data: any) => {
+    try {
+      return await api.put('/auth/me', data)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  changePassword: (data: { currentPassword: string; newPassword: string }) =>
-    api.put('/auth/change-password', data),
+  changePassword: async (data: { currentPassword: string; newPassword: string }) => {
+    try {
+      return await api.put('/auth/change-password', data)
+    } catch (error) {
+      throw error
+    }
+  },
 }
 
 // Assets API
 export const assetsAPI = {
-  getAll: (params?: any) =>
-    api.get('/assets', { params }),
+  getAll: async (params?: any) => {
+    try {
+      return await api.get('/assets', { params })
+    } catch (error) {
+      // Return fallback data if API is unavailable
+      console.warn('API unavailable, using fallback data:', error)
+      return createFallbackResponse({
+        assets: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10
+        }
+      })
+    }
+  },
   
-  getById: (id: string) =>
-    api.get(`/assets/${id}`),
+  getById: async (id: string) => {
+    try {
+      return await api.get(`/assets/${id}`)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  create: (data: any) =>
-    api.post('/assets', data),
+  create: async (data: any) => {
+    try {
+      return await api.post('/assets', data)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  update: (id: string, data: any) =>
-    api.put(`/assets/${id}`, data),
+  update: async (id: string, data: any) => {
+    try {
+      return await api.put(`/assets/${id}`, data)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  delete: (id: string) =>
-    api.delete(`/assets/${id}`),
+  delete: async (id: string) => {
+    try {
+      return await api.delete(`/assets/${id}`)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  addMaintenance: (id: string, data: any) =>
-    api.post(`/assets/${id}/maintenance`, data),
+  addMaintenance: async (id: string, data: any) => {
+    try {
+      return await api.post(`/assets/${id}/maintenance`, data)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  getStats: () =>
-    api.get('/assets/stats/overview'),
+  getStats: async () => {
+    try {
+      return await api.get('/assets/stats/overview')
+    } catch (error) {
+      // Return fallback stats if API is unavailable
+      console.warn('API unavailable, using fallback stats:', error)
+      return createFallbackResponse({
+        totalAssets: 0,
+        activeAssets: 0,
+        maintenanceAssets: 0,
+        retiredAssets: 0,
+        totalValue: 0,
+        assetsByType: [],
+        assetsByCondition: []
+      })
+    }
+  },
   
-  assignToUser: (id: string, userId: string) =>
-    api.post(`/assets/${id}/assign`, { assignedTo: userId }),
+  assignToUser: async (id: string, userId: string) => {
+    try {
+      return await api.post(`/assets/${id}/assign`, { assignedTo: userId })
+    } catch (error) {
+      throw error
+    }
+  },
   
-  returnAsset: (id: string) =>
-    api.post(`/assets/${id}/return`),
+  returnAsset: async (id: string) => {
+    try {
+      return await api.post(`/assets/${id}/return`)
+    } catch (error) {
+      throw error
+    }
+  },
 }
 
 // Convenience function for getting assets
 export const getAssets = async (): Promise<Asset[]> => {
-  const response = await assetsAPI.getAll()
-  return response.data
+  try {
+    const response = await assetsAPI.getAll()
+    return response.data.assets || []
+  } catch (error) {
+    console.error('Error getting assets:', error)
+    return []
+  }
 }
 
 // Users API
 export const usersAPI = {
-  getAll: (params?: any) =>
-    api.get('/users', { params }),
+  getAll: async (params?: any) => {
+    try {
+      return await api.get('/users', { params })
+    } catch (error) {
+      // Return fallback data if API is unavailable
+      console.warn('API unavailable, using fallback user data:', error)
+      return createFallbackResponse({
+        users: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10
+        }
+      })
+    }
+  },
   
-  getBasicList: () =>
-    api.get('/users/basic/list'),
+  getBasicList: async () => {
+    try {
+      return await api.get('/users/basic/list')
+    } catch (error) {
+      // Return fallback data if API is unavailable
+      console.warn('API unavailable, using fallback basic user data:', error)
+      return createFallbackResponse({
+        users: []
+      })
+    }
+  },
   
-  getById: (id: string) =>
-    api.get(`/users/${id}`),
+  getById: async (id: string) => {
+    try {
+      return await api.get(`/users/${id}`)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  update: (id: string, data: any) =>
-    api.put(`/users/${id}`, data),
+  update: async (id: string, data: any) => {
+    try {
+      return await api.put(`/users/${id}`, data)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  delete: (id: string) =>
-    api.delete(`/users/${id}`),
+  delete: async (id: string) => {
+    try {
+      return await api.delete(`/users/${id}`)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  toggleStatus: (id: string) =>
-    api.patch(`/users/${id}/toggle-status`),
+  toggleStatus: async (id: string) => {
+    try {
+      return await api.patch(`/users/${id}/toggle-status`)
+    } catch (error) {
+      throw error
+    }
+  },
   
-  getTeamMembers: () =>
-    api.get('/users/team/members'),
+  getTeamMembers: async () => {
+    try {
+      return await api.get('/users/team/members')
+    } catch (error) {
+      // Return fallback data if API is unavailable
+      console.warn('API unavailable, using fallback team data:', error)
+      return createFallbackResponse({
+        members: []
+      })
+    }
+  },
   
-  getAssignmentList: () =>
-    api.get('/users/assignment/list'),
+  getAssignmentList: async () => {
+    try {
+      return await api.get('/users/assignment/list')
+    } catch (error) {
+      // Return fallback data if API is unavailable
+      console.warn('API unavailable, using fallback assignment data:', error)
+      return createFallbackResponse({
+        users: []
+      })
+    }
+  },
   
-  getProfile: (id: string) =>
-    api.get(`/users/profile/${id}`),
+  getProfile: async (id: string) => {
+    try {
+      return await api.get(`/users/profile/${id}`)
+    } catch (error) {
+      throw error
+    }
+  },
 }
 
 export default api 
