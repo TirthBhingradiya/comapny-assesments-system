@@ -4,8 +4,8 @@
   "description": "Backend API for Company Assets Management System",
   "main": "dist/app.js",
   "scripts": {
-    "start": "node dist/app.js",
-    "dev": "nodemon src/app.ts",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "build": "tsc",
     "test": "jest",
     "seed": "ts-node src/seedData.ts"
