@@ -10,6 +10,13 @@ interface User {
   lastName: string
   email: string
   role: string
+  department?: string
+  position?: string
+  employeeId?: string
+  phone?: string
+  avatar?: string
+  isActive?: boolean
+  lastLogin?: Date
 }
 
 interface AuthContextType {

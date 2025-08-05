@@ -32,11 +32,17 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [apiAvailable, setApiAvailable] = useState(true)
+  const [userRole, setUserRole] = useState<any>(null)
   const router = useRouter()
   const { user } = useAuth()
 
-  const userString = localStorage.getItem("user") ?? '{}';
-  const userRole = JSON.parse(userString);
+  // Get user role from localStorage safely
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userString = localStorage.getItem("user") ?? '{}';
+      setUserRole(JSON.parse(userString));
+    }
+  }, []);
 
   const fetchDashboardData = async () => {
     try {

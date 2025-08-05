@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import {
   ChartBarIcon,
-  DocumentChartIcon,
+  DocumentTextIcon,
   CurrencyDollarIcon,
   BuildingOfficeIcon,
   ExclamationTriangleIcon
@@ -252,7 +252,7 @@ export default function ReportsPage() {
               <div className="space-y-3">
                 <button className="w-full flex items-center justify-between p-3 text-left border border-gray-200 rounded-md hover:bg-gray-50">
                   <div className="flex items-center">
-                    <DocumentChartIcon className="h-5 w-5 text-blue-600 mr-3" />
+                    <DocumentTextIcon className="h-5 w-5 text-blue-600 mr-3" />
                     <span className="text-sm font-medium text-gray-900">Export Report</span>
                   </div>
                   <span className="text-gray-400">→</span>
